@@ -38,17 +38,31 @@ const fetchCoordsByIP = function(ip) {
  */
 
 const fetchISSFlyOverTimes = function(coords) {
-  const latitude = coords.latitude
+  const latitude = coords.latitude;
   const longitude = coords.longitude;
   const url = `https://iss-flyover.herokuapp.com/json/?lat=${latitude}&lon=${longitude}`;
   return needle('get', url)
-  .then((response) => {
-    const body = response.body;
-    const passtimes = body.response;  // changed the name from response to passtimes for clarification
-    return passtimes;
-  })
-}
+    .then((response) => {
+      const body = response.body;
+      const passtimes = body.response;  // changed the name from response to passtimes for clarification
+      return passtimes;
+    });
+};
+
+/*
+ * Input: None
+ * Returns: Promise for fly over data for users location
+ */
+
+const nextISSTimesForMyLocation = function() {
+  return fetchMyIP()
+    .then((ip) => fetchCoordsByIP(ip))
+    .then((coords) => fetchISSFlyOverTimes(coords))
+    .then((passtimes) => {
+      return passtimes;
+    });
+};
 
 
-
-module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes };
+//module.exports = { fetchMyIP, fetchCoordsByIP, fetchISSFlyOverTimes };
+module.exports = { nextISSTimesForMyLocation };
